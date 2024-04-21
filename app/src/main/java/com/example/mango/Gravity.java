@@ -33,7 +33,7 @@ public class Gravity {
         gravQueue = new LinkedList<>();
 
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        gravSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        gravSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
     }
 
     private SensorEventListener gravListener = new SensorEventListener() {
@@ -49,7 +49,7 @@ public class Gravity {
 
             updateProgress(gravQueue.size());
 
-            Log.d("accSensor", "重力数据" + gravQueue.size());
+            Log.d("gyroSensor", "重力数据" + gravQueue.size());
             if (gravQueue.size() == 100) {
                 for (double value : gravQueue) dataLib.grav += value;
                 dataLib.grav /= gravQueue.size();
@@ -93,6 +93,9 @@ public class Gravity {
             }
         }
     }
+
+
+
     private void showMsg(String msg) {
         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
     }

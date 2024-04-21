@@ -41,6 +41,8 @@ import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -269,11 +271,13 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
                 if(!canSave) showMsg("请先记录一段数据");
                 else if(startBtnStatus) showMsg("请先停止记录");
                 else {
-                    int time = (int) (System.currentTimeMillis() / 1000000.0);
+                    SimpleDateFormat formatter = new SimpleDateFormat("MM/dd_HH:mm:ss");
+                    Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+                    String str  = formatter.format(curDate);
 
-                    FileSave.writeToFile(context, "SensorData_" + time + ".txt", dataLib.sensorDataString.toString());
-                    FileSave.writeToFile(context, "FilterData_" + time + ".txt", dataLib.filterDataString.toString());
-                    FileSave.writeToFile(context, "PositionData_" + time + ".txt", dataLib.positionDataString.toString());
+                    FileSave.writeToFile(context, "SensorData_" + str + ".txt", dataLib.sensorDataString.toString());
+                    FileSave.writeToFile(context, "FilterData_" + str + ".txt", dataLib.filterDataString.toString());
+                    FileSave.writeToFile(context, "PositionData_" + str + ".txt", dataLib.positionDataString.toString());
 
                     dataLib.sensorDataString = new StringBuilder();
                     dataLib.filterDataString = new StringBuilder();

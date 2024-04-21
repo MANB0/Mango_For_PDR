@@ -1,0 +1,16 @@
+<!-- res/drawable/layered_shape.xml -->
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 第一个 XML 文件 -->
+    <item android:drawable="@drawable/round_corner_white"
+        android:width="50dp"
+        android:height="50dp" />
+
+    <!-- 第二个 XML 文件 -->
+    <item android:drawable="@drawable/save"
+        android:width="35dp"
+        android:height="35dp"
+        android:gravity="center"/>
+
+</layer-list>

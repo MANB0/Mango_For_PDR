@@ -87,11 +87,11 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
         mapView = (MapView) findViewById(R.id.map_view);
         mapView.onCreate(savedInstanceState);
 
-        checkingAndroidVersion();
+        initLocation();
 
         initMap(savedInstanceState);
 
-        initLocation();
+        checkingAndroidVersion();
 
         LinearLayout btmSheet = findViewById(R.id.btmSheet);
         LinearLayout mainBtmSheet = findViewById(R.id.mainBtmSheet);

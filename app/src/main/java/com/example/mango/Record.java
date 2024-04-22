@@ -161,15 +161,31 @@ public class Record {
             filterString.append(accFilterString).append("\n");
 
             if (stepLength != 0) {
-                E += stepLength * Math.sin(dataLib.angle);
-                N += stepLength * Math.cos(dataLib.angle);
+                mLocationClient.startLocation();
+
+                double[] trueGCJ02 = new double[]{dataLib.latitude, dataLib.longtitude, dataLib.altitude};
+                double[] trueWGS84 = posTrans.GCJ022WGS84(trueGCJ02);
+                double[] trueENU = posTrans.WGS842ENU(trueWGS84);
+
+                trueLatlngText.setText("GCJ02定位经纬度: " + String.format("%.6f", dataLib.latitude) + ", "
+                        + String.format("%.6f", dataLib.longtitude));
+
+//                double correctAngle = dataLib.angle - Math.toRadians(5) + Math.sin(Math.toRadians(trueWGS84[0])) * Math.toRadians(trueWGS84[1] - 117);
+                double correctAngle = dataLib.angle - Math.toRadians(5);
+//                Log.d("Angle", String.valueOf(Math.sin(Math.toRadians(trueWGS84[0]))) + ", " + String.valueOf(Math.toRadians(trueWGS84[1] - 117)) + ", " + String.valueOf(Math.sin(Math.toRadians(trueWGS84[0])) * Math.toRadians(trueWGS84[1] - 117)));
+
+                yawMagText.setText("改正后航向角: " + String.format("%.6f", Math.toDegrees(correctAngle)));
+
+                E += stepLength * Math.sin(correctAngle);
+                N += stepLength * Math.cos(correctAngle);
 
                 double[] ENU = new double[]{E, N, 0};
                 double[] WGS84 = posTrans.ENU2WGS84(ENU);
                 double[] GCJ02 = posTrans.WGS842GCJ02(WGS84);
 
                 ENUText.setText("ENU: " + String.format("%.6f", ENU[0]) + ", "
-                        + String.format("%.6f", ENU[1]));
+                        + String.format("%.6f", ENU[1]) + ", "
+                + String.format("%.6f", Math.toDegrees(correctAngle)));
 
                 preLatlngText.setText("GCJ02预测经纬度: " + String.format("%.6f", GCJ02[0]) + ", "
                         + String.format("%.6f", GCJ02[1]));
@@ -181,15 +197,6 @@ public class Record {
                 stepNum++;
                 stepNumText.setText("步数: " + String.format("%d", stepNum));
                 stepLengthText.setText("步长: " + String.format("%.6f", stepLength));
-
-                mLocationClient.startLocation();
-
-                trueLatlngText.setText("GCJ02定位经纬度: " + String.format("%.6f", dataLib.latitude) + ", "
-                        + String.format("%.6f", dataLib.longtitude));
-
-                double[] trueGCJ02 = new double[]{dataLib.latitude, dataLib.longtitude, dataLib.altitude};
-                double[] trueWGS84 = posTrans.GCJ022WGS84(trueGCJ02);
-                double[] trueENU = posTrans.WGS842ENU(trueWGS84);
 
                 String posString = String.format("%d, %.6f, %.6f, %.6f, %.6f", event.timestamp, ENU[0], ENU[1], trueENU[0], trueENU[1]);
                 positionString.append(posString).append("\n");
@@ -222,7 +229,7 @@ public class Record {
                 dataLib.angle = attAngle[2] + dataLib.initAngle;
             }
 
-            yawGyroText.setText("陀螺仪yaw: " + String.format("%.6f", Math.toDegrees(dataLib.angle)));
+            yawGyroText.setText("陀螺仪航向角: " + String.format("%.6f", Math.toDegrees(dataLib.angle)));
         }
 
         @Override
@@ -240,18 +247,6 @@ public class Record {
             magData[0] = event.values[0];
             magData[1] = event.values[1];
             magData[2] = event.values[2];
-
-            float[] accDataF = new float[3];
-            float[] magDataF = new float[3];
-            for (int i = 0; i < 3; i++) {
-                accDataF[i] = (float) accData[i];
-                magDataF[i] = (float) magData[i];
-            }
-            float[] R = new float[9];
-            float[] values = new float[3];
-            SensorManager.getRotationMatrix(R, null, accDataF, magDataF);
-            sensorManager.getOrientation(R, values);
-            yawMagText.setText("磁力计yaw: " + String.format("%.6f", Math.toDegrees(values[0])));
         }
 
         @Override

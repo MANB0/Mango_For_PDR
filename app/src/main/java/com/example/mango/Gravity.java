@@ -23,11 +23,14 @@ public class Gravity {
     private LinkedList<Double> gravQueue;
     private SensorManager sensorManager;
     private Sensor gravSensor;
+    private Filter filter;
 
     public Gravity(DataLib dataLib, Context context, TextView gravText){
         this.dataLib = dataLib;
         this.context = context;
         this.gravText = gravText;
+
+        filter = new Filter();
 
         gravData = new double[3];
         gravQueue = new LinkedList<>();
@@ -43,20 +46,22 @@ public class Gravity {
             gravData[1] = event.values[1];
             gravData[2] = event.values[2];
 
-//            double gravModData = Math.sqrt(Math.pow(gravData[0], 2.0) + Math.pow(gravData[1], 2.0) + Math.pow(gravData[2], 2.0));
+            double gravModData = Math.sqrt(Math.pow(gravData[0], 2.0) + Math.pow(gravData[1], 2.0) + Math.pow(gravData[2], 2.0));
+            double gravFilterModData = filter.getFilterData(gravModData);
 
-            gravQueue.addLast(gravData[2]);
+            gravQueue.addLast(gravFilterModData);
 
             updateProgress(gravQueue.size());
 
             Log.d("gyroSensor", "重力数据" + gravQueue.size());
-            if (gravQueue.size() == 100) {
+            if (gravQueue.size() == 200) {
                 for (double value : gravQueue) dataLib.grav += value;
                 dataLib.grav /= gravQueue.size();
 
                 gravQueue = new LinkedList<>();
 
                 gravText.setText("平均重力值: " + String.format("%.6f", dataLib.grav));
+                Log.d("gyroSensor", "平均重力值" + dataLib.grav);
 
                 showMsg("获取平均重力值成功");
 
@@ -80,7 +85,7 @@ public class Gravity {
         progressDialog.setMessage("获取平均重力中，请保持手机水平稳定");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setProgress(0);
-        progressDialog.setMax(100);
+        progressDialog.setMax(200);
         progressDialog.setCancelable(false); // 禁止取消
         progressDialog.show();
     }
@@ -88,7 +93,7 @@ public class Gravity {
     public void updateProgress(int progress) {
         if (progressDialog != null) {
             progressDialog.setProgress(progress);
-            if (progress >= 100) {
+            if (progress >= 200) {
                 progressDialog.dismiss();
             }
         }

@@ -29,6 +29,13 @@ public class Filter {
         filterData = 0;
     }
 
+    public double getFilterData(double data) {
+        double HMA = HMAFilter(data);
+        double Kalman = KalmanFilter(HMA);
+        double BWLP = BWLPFilter(Kalman);
+        return BWLP;
+    }
+
     //赫尔移动平均滤波
     public double HMAFilter(double data) {
         //设置三个窗口大小

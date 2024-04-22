@@ -149,6 +149,7 @@ public class StepDetect {
                 peakDetected = true;
             }
             if (valleyQueue.getLast() <= -valleyMSD * valleyMSD) {
+                valleyText.setText("Valley: " + String.format("%.6f", valleyQueue.getLast()));
                 valleyDetected = true;
             }
         } else {

@@ -261,6 +261,10 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
                     showMsg("清除面板数据");
 
                     canClear = false;
+
+                    gravStatus = false;
+                    posStatus = false;
+                    yawStatus = false;
                 }
             }
         });
@@ -271,13 +275,10 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
                 if(!canSave) showMsg("请先记录一段数据");
                 else if(startBtnStatus) showMsg("请先停止记录");
                 else {
-                    SimpleDateFormat formatter = new SimpleDateFormat("MM/dd_HH:mm:ss");
-                    Date curDate = new Date(System.currentTimeMillis());//获取当前时间
-                    String str  = formatter.format(curDate);
-
-                    FileSave.writeToFile(context, "SensorData_" + str + ".txt", dataLib.sensorDataString.toString());
-                    FileSave.writeToFile(context, "FilterData_" + str + ".txt", dataLib.filterDataString.toString());
-                    FileSave.writeToFile(context, "PositionData_" + str + ".txt", dataLib.positionDataString.toString());
+                    FileSave fileSave = new FileSave();
+                    fileSave.writeToFile(context, "SensorData", dataLib.sensorDataString.toString());
+                    fileSave.writeToFile(context, "FilterData", dataLib.filterDataString.toString());
+                    fileSave.writeToFile(context, "PositionData", dataLib.positionDataString.toString());
 
                     dataLib.sensorDataString = new StringBuilder();
                     dataLib.filterDataString = new StringBuilder();
@@ -427,9 +428,6 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
             @Override
             public void onClick(View v) {
                 startBtnStatus = false;
-                gravStatus = false;
-                posStatus = false;
-                yawStatus = false;
 
                 canSave = true;
                 canClear = true;
@@ -488,7 +486,7 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
         // 自定义精度范围的圆形边框宽度  0 无宽度
         myLocationStyle.strokeWidth(0);
         // 设置圆形的填充颜色  都为0则透明
-        myLocationStyle.radiusFillColor(Color.argb(0, 0, 0, 0));
+        myLocationStyle.radiusFillColor(Color.argb(30, 2, 122, 255));
 
         //设置定位蓝点的Style
         aMap.setMyLocationStyle(myLocationStyle);
@@ -595,6 +593,8 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
                 dataLib.latitude = aMapLocation.getLatitude();
                 dataLib.longtitude = aMapLocation.getLongitude();
                 dataLib.altitude = aMapLocation.getAltitude();
+
+                Log.d("yaw", "高德航向角" + aMapLocation.getBearing());
 
 //                showMsg(String.format("%.6f", dataLib.latitude) + "\n" + String.format("%.6f", dataLib.longtitude));
 

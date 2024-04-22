@@ -24,11 +24,14 @@ public class Yaw {
     private LinkedList<Double> yawQueue;
     private SensorManager sensorManager;
     private Sensor accSensor, magSensor;
+    private Filter filter;
 
     public Yaw(DataLib dataLib, Context context, TextView yawText) {
         this.dataLib = dataLib;
         this.context = context;
         this.yawText = yawText;
+
+        filter = new Filter();
 
         accData = new double[3];
         magData = new double[3];
@@ -71,18 +74,23 @@ public class Yaw {
             SensorManager.getRotationMatrix(R, null, accDataF, magDataF);
             sensorManager.getOrientation(R, values);
 
-            yawQueue.addLast((double) values[0]);
+            double yawData = values[0];
+            double yawFilterData = filter.getFilterData(yawData);
+
+            yawQueue.addLast(yawFilterData);
 
             updateProgress(yawQueue.size());
 
             Log.d("yaw", "航向角数据" + yawQueue.size());
-            if (yawQueue.size() == 100) {
+
+            if (yawQueue.size() == 200) {
                 for (double value : yawQueue) dataLib.initAngle += value;
                 dataLib.initAngle /= yawQueue.size();
 
                 yawQueue = new LinkedList<>();
 
                 yawText.setText("初始航向角: " + String.format("%.6f", Math.toDegrees(dataLib.initAngle)));
+                Log.d("yaw", "初始航向角" + dataLib.initAngle);
 
                 showMsg("获取初始航向角成功");
 
@@ -108,7 +116,7 @@ public class Yaw {
         progressDialog.setMessage("获取初始航向中，请尽量远离电子设备");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setProgress(0);
-        progressDialog.setMax(100);
+        progressDialog.setMax(200);
         progressDialog.setCancelable(false); // 禁止取消
         progressDialog.show();
     }
@@ -116,7 +124,7 @@ public class Yaw {
     public void updateProgress(int progress) {
         if (progressDialog != null) {
             progressDialog.setProgress(progress);
-            if (progress >= 100) {
+            if (progress >= 200) {
                 progressDialog.dismiss();
             }
         }

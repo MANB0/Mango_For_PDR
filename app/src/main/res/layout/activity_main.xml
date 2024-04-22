@@ -269,14 +269,14 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="陀螺仪yaw: " />
+                                android:text="陀螺仪航向角: " />
 
                             <TextView
                                 android:id="@+id/yawMagText"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="磁力计yaw: " />
+                                android:text="改正后航向角: " />
                         </LinearLayout>
 
                         <LinearLayout
